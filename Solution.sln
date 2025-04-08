@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoworkingBooking", "CoworkingBooking\CoworkingBooking.csproj", "{087ABB6D-2A2B-4B05-B78A-30E79030DDFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoworkingBooking.Test", "TestProject\CoworkingBooking.Test.csproj", "{0E9A7E1E-A5B0-424C-A0A3-6366189D640F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{087ABB6D-2A2B-4B05-B78A-30E79030DDFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{087ABB6D-2A2B-4B05-B78A-30E79030DDFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{087ABB6D-2A2B-4B05-B78A-30E79030DDFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{087ABB6D-2A2B-4B05-B78A-30E79030DDFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E9A7E1E-A5B0-424C-A0A3-6366189D640F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E9A7E1E-A5B0-424C-A0A3-6366189D640F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E9A7E1E-A5B0-424C-A0A3-6366189D640F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E9A7E1E-A5B0-424C-A0A3-6366189D640F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {57ECD1BC-7412-442D-9139-4B1409B29EA2}
+	EndGlobalSection
+EndGlobal

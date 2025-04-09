@@ -3,6 +3,8 @@ using CoworkingBooking.Data;
 using CoworkingBooking.Models;
 using Microsoft.EntityFrameworkCore;
 using CoworkingBooking.Models.DTO;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoworkingBooking.Controllers
 {
@@ -34,7 +36,7 @@ namespace CoworkingBooking.Controllers
         [HttpPost] // Add(Create) new booking
         public async Task<ActionResult<Booking>> CreateBooking([FromBody] BookingCreateDto bookingDto)
         {
-            if (bookingDto.StartDate < DateTime.Now || bookingDto.EndDate <= bookingDto.StartDate)
+            if (bookingDto.StartDate < DateTime.UtcNow || bookingDto.EndDate <= bookingDto.StartDate)
                 return BadRequest("You cannot create booking in the past or with incorrect time.");
 
             var duration = bookingDto.EndDate - bookingDto.StartDate;
@@ -50,12 +52,21 @@ namespace CoworkingBooking.Controllers
             if (hasConflict)
                 return Conflict("This workspace is already booked for the selected time.");
 
+            // 3. Расчёт стоимости
+            var pricePer30Min = 2.00m;
+            var totalBlocks = Math.Ceiling(duration.TotalMinutes / 30);
+            var calculatedPrice = (decimal)totalBlocks * pricePer30Min;
+
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
             var booking = new Booking
             {
-                UserID = bookingDto.UserID,
+                UserID = userId,
                 WorkspaceId = bookingDto.WorkspaceId,
                 StartDate = bookingDto.StartDate,
-                EndDate = bookingDto.EndDate
+                EndDate = bookingDto.EndDate,
+                TotalPrice = calculatedPrice,
+                IsPaid = bookingDto.IsPaid
             };
 
             context.Bookings.Add(booking);
@@ -74,24 +85,62 @@ namespace CoworkingBooking.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")] // Delete booking
-        public async Task<IActionResult> DeleteBooking(int id)
+        public async Task<IActionResult> CancleBooking(int id)
         {
-            var booking = await context.Bookings.FindAsync(id);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var booking = await context.Bookings.FirstOrDefaultAsync(b => b.Id == id && b.UserID == userId);
             if (booking == null)
                 return NotFound();
+
             context.Bookings.Remove(booking);
             await context.SaveChangesAsync();
+
             return NoContent();
         }
-        [HttpPost("{id}/cancel")] // Cancel booking
-        public async Task<IActionResult> CancelBooking(int id)
+
+        
+
+        [HttpGet("mine")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<object>>> GetMyBookings()
         {
-            var booking = await context.Bookings.FindAsync(id);
-            if (booking == null)
-                return NotFound();
-            context.Bookings.Remove(booking);
-            await context.SaveChangesAsync();
-            return NoContent();
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var bookings = await context.Bookings
+                .Include(b => b.Workspace)
+                .Where(b => b.UserID == userId)
+                .OrderByDescending(b => b.StartDate)
+                .Select(b => new {
+                    b.Id,
+                    b.StartDate,
+                    b.EndDate,
+                    b.TotalPrice,
+                    b.IsPaid,
+                    WorkspaceName = b.Workspace.Name,
+                    WorkspaceLocation = b.Workspace.Location
+                })
+                .ToListAsync();
+
+            return Ok(bookings);
         }
+
+        [HttpGet("occupied")]
+        public async Task<ActionResult<IEnumerable<object>>> GetOccupiedSlots(int workspaceId, DateTime date)
+        {
+            var start = date.Date;
+            var end = start.AddDays(1);
+
+            var bookings = await context.Bookings
+                .Where(b => b.WorkspaceId == workspaceId &&
+                            b.StartDate >= start &&
+                            b.EndDate <= end)
+                .Select(b => new { b.StartDate, b.EndDate })
+                .ToListAsync();
+
+            return Ok(bookings);
+        }
+        
+       
     }
 }

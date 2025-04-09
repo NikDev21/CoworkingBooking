@@ -3,6 +3,8 @@ using CoworkingBooking.Data;
 using CoworkingBooking.Models;
 using Microsoft.EntityFrameworkCore;
 using CoworkingBooking.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 
@@ -77,6 +79,48 @@ namespace CoworkingBooking.Controllers
             context.Users.Remove(user);
             await context.SaveChangesAsync();
             return NoContent();
+        }
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var user = await context.Users.FindAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+
+
+            return Ok(new
+            {
+                user.Id,
+                user.Email,
+                user.Name,
+                RegisteredAt = user.CreatedAt
+            });
+        }
+        [HttpGet("me/payments")]
+        [Authorize]
+        public async Task<IActionResult> GetMyPayments()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var payments = await context.Payments
+                .Where(p => p.UserId == userId)
+                .Include(p => p.Booking)
+                .OrderByDescending(p => p.PaidAt)
+                .Select(p => new {
+                    p.Id,
+                    p.Amount,
+                    p.Status,
+                    p.PaidAt,
+                    Start = p.Booking.StartDate,
+                    End = p.Booking.EndDate
+                })
+                .ToListAsync();
+
+            return Ok(payments);
         }
     }
 }

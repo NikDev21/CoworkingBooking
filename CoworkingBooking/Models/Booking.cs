@@ -16,5 +16,8 @@ namespace CoworkingBooking.Models
 
         public User? User { get; set; }
         public Workspace? Workspace { get; set; }
+
+        public decimal TotalPrice { get; set; }  
+        public bool IsPaid { get; set; }
     }
 }

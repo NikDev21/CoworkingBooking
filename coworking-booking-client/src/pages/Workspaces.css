@@ -1,0 +1,33 @@
+.workspaces-container {
+  padding: 40px;
+}
+
+.workspace-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.workspace-card {
+  width: 150px;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+}
+
+.workspace-card.free {
+  background-color: #d4edda;
+  cursor: pointer;
+}
+
+.workspace-card.busy {
+  background-color: #f8d7da;
+  cursor: not-allowed;
+}
+
+.workspace-card h4 {
+  margin-bottom: 4px;
+  font-size: 1.1rem;
+}

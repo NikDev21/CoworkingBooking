@@ -4,6 +4,7 @@ using CoworkingBooking.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoworkingBooking.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408211716_SeedWorkspaces")]
+    partial class SeedWorkspaces
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,14 +36,8 @@ namespace CoworkingBooking.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("IsPaid")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(65,30)");
 
                     b.Property<int>("UserID")
                         .HasColumnType("int");
@@ -57,39 +54,6 @@ namespace CoworkingBooking.Migrations
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("CoworkingBooking.Models.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("BookingId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PaidAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookingId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Payments");
-                });
-
             modelBuilder.Entity("CoworkingBooking.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -97,9 +61,6 @@ namespace CoworkingBooking.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -307,25 +268,6 @@ namespace CoworkingBooking.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Workspace");
-                });
-
-            modelBuilder.Entity("CoworkingBooking.Models.Payment", b =>
-                {
-                    b.HasOne("CoworkingBooking.Models.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoworkingBooking.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Booking");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
